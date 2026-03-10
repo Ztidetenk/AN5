@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Months with You 🌊</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --abyss:    #020d14;
+    --deep:     #041c2c;
+    --midnight: #062840;
+    --ocean:    #0a4a6e;
+    --teal:     #0e7490;
+    --cyan:     #22d3ee;
+    --seafoam:  #67e8f9;
+    --foam:     #cffafe;
+    --muted:    #7eb8cc;
+    --text:     #e0f7fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--abyss);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    box-shadow: 0 0 12px var(--cyan), 0 0 24px rgba(34,211,238,0.4);
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(34,211,238,0.35);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: all 0.22s ease;
+  }
+
+  /* OCEAN CANVAS */
+  #ocean-bg {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none;
+  }
+
+  /* BUBBLES */
+  #bubbles {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(34,211,238,var(--op));
+    background: rgba(34,211,238,0.03);
+    bottom: -60px;
+    animation: riseUp var(--dur) ease-in infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes riseUp {
+    0%   { transform: translateY(0) translateX(0); opacity: var(--op); }
+    50%  { transform: translateY(-45vh) translateX(var(--drift)); }
+    100% { transform: translateY(-105vh) translateX(calc(var(--drift)*1.6)); opacity: 0; }
+  }
+
+  /* WAVES */
+  .wave-container {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 110px; z-index: 1; pointer-events: none;
+    overflow: hidden;
+  }
+  .wave {
+    position: absolute; bottom: 0; left: -50%;
+    width: 200%; height: 100%;
+    background: rgba(6,40,64,0.4);
+    border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+  }
+  .wave1 { animation: wave1 8s ease-in-out infinite; }
+  .wave2 { animation: wave2 11s ease-in-out infinite; background: rgba(10,74,110,0.22); }
+  .wave3 { animation: wave3 14s ease-in-out infinite; background: rgba(14,116,144,0.13); }
+  @keyframes wave1 { 0%,100%{transform:translateX(0) scaleY(1);} 50%{transform:translateX(5%) scaleY(1.1);} }
+  @keyframes wave2 { 0%,100%{transform:translateX(0) scaleY(1);} 50%{transform:translateX(-6%) scaleY(0.9);} }
+  @keyframes wave3 { 0%,100%{transform:translateX(0) scaleY(1);} 50%{transform:translateX(4%) scaleY(1.05);} }
+
+  /* LANDING */
+  #landing {
+    position: relative; z-index: 2;
+    height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .landing-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 70%, rgba(10,74,110,0.55) 0%, transparent 70%),
+      radial-gradient(ellipse 35% 25% at 50% 80%, rgba(34,211,238,0.07) 0%, transparent 60%);
+  }
+  .rays {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(
+      -15deg, transparent, transparent 60px,
+      rgba(34,211,238,0.012) 60px, rgba(34,211,238,0.012) 80px
+    );
+    animation: rayShift 12s ease-in-out infinite alternate;
+  }
+  @keyframes rayShift { from{transform:translateX(-10px);} to{transform:translateX(10px);} }
+
+  .month-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    color: var(--seafoam);
+    opacity: 0.75;
+    margin-bottom: 2rem;
+    animation: fadeUp 1s ease both;
+  }
+  .main-title {
+    font-size: clamp(2.8rem, 9vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    animation: fadeUp 1s 0.2s ease both;
+    text-shadow: 0 0 60px rgba(34,211,238,0.18);
+  }
+  .main-title em { font-style: italic; color: var(--seafoam); }
+  .subtitle {
+    margin-top: 1.5rem;
+    font-size: clamp(1rem, 2.2vw, 1.35rem);
+    font-weight: 300;
+    color: var(--muted);
+    font-style: italic;
+    max-width: 480px;
+    line-height: 1.7;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    opacity: 0;
+    animation: pulse 2.5s ease-in-out infinite, fadeUp 1s 1.2s ease forwards;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4;} 50%{opacity:0.9;} }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* SECTIONS */
+  section {
+    position: relative; z-index: 2;
+    padding: clamp(4rem,10vh,7rem) clamp(1.5rem,6vw,5rem);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    color: var(--teal);
+    margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content:''; flex:1; height:1px;
+    background: linear-gradient(to right, var(--teal), transparent);
+  }
+
+  /* SORRY */
+  #sorry { background: linear-gradient(180deg, transparent, rgba(6,40,64,0.28), transparent); }
+  .sorry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .sorry-card {
+    border: 1px solid rgba(34,211,238,0.12);
+    border-radius: 3px; padding: 2rem;
+    background: rgba(10,74,110,0.07);
+    position: relative; overflow: hidden;
+    transition: all 0.45s ease; cursor: default;
+  }
+  .sorry-card::before {
+    content:''; position:absolute; top:0; left:0;
+    width:2px; height:0;
+    background: linear-gradient(to bottom, var(--cyan), var(--teal));
+    transition: height 0.45s ease;
+  }
+  .sorry-card::after {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 60% at 50% 120%, rgba(34,211,238,0.05) 0%, transparent 70%);
+    opacity:0; transition: opacity 0.45s ease;
+  }
+  .sorry-card:hover::before { height:100%; }
+  .sorry-card:hover::after  { opacity:1; }
+  .sorry-card:hover {
+    border-color: rgba(34,211,238,0.28);
+    background: rgba(10,74,110,0.14);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(34,211,238,0.07);
+  }
+  .sorry-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem; color: var(--teal);
+    letter-spacing: 0.2em; margin-bottom: 1rem;
+  }
+  .sorry-card p {
+    font-size: 1.05rem; font-weight: 300;
+    line-height: 1.75; color: rgba(224,247,250,0.87);
+  }
+
+  /* LOVE */
+  .love-title {
+    font-size: clamp(2.2rem,6vw,4.2rem);
+    font-weight: 300; line-height: 1.15;
+    letter-spacing: -0.01em; margin-bottom: 3rem;
+  }
+  .love-title em { font-style:italic; color:var(--seafoam); }
+  .love-prose {
+    font-size: clamp(1.05rem,2vw,1.3rem);
+    font-weight: 300; line-height: 1.95;
+    color: rgba(224,247,250,0.8); margin-bottom: 2rem;
+  }
+  .ways-list { list-style:none; margin-top:2.5rem; }
+  .ways-list li {
+    display:flex; align-items:flex-start; gap:1.5rem;
+    padding:1.5rem 0;
+    border-bottom:1px solid rgba(34,211,238,0.07);
+    font-size: clamp(1rem,1.8vw,1.2rem);
+    font-weight:300; line-height:1.7;
+    opacity:0; transform:translateX(-16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .ways-list li.visible { opacity:1; transform:translateX(0); }
+  .ways-list li:last-child { border-bottom:none; }
+  .ways-num {
+    font-family:'DM Mono',monospace;
+    font-size:0.68rem; color:var(--cyan);
+    padding-top:0.4rem; min-width:2rem; letter-spacing:0.1em;
+  }
+
+  /* LETTER */
+  #letter { background: linear-gradient(180deg, transparent, rgba(6,40,64,0.38), transparent); }
+  .letter-box {
+    border:1px solid rgba(34,211,238,0.17);
+    padding: clamp(2rem,5vw,4rem);
+    position:relative;
+    background:rgba(4,28,44,0.62);
+    backdrop-filter:blur(12px);
+  }
+  .letter-box::before,.letter-box::after {
+    content:''; position:absolute;
+    width:22px; height:22px;
+    border-color:var(--cyan); border-style:solid; opacity:0.55;
+  }
+  .letter-box::before { top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .letter-box::after  { bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+  .letter-dear {
+    font-style:italic; color:var(--seafoam);
+    margin-bottom:2rem; font-size:1.2rem;
+  }
+  .letter-body {
+    font-size: clamp(1.05rem,1.8vw,1.22rem);
+    font-weight:300; line-height:2.05;
+    color:rgba(224,247,250,0.88);
+  }
+  .letter-body p+p { margin-top:1.5rem; }
+  .letter-sign {
+    margin-top:3rem; font-style:italic;
+    color:var(--seafoam); font-size:1.1rem;
+  }
+
+  /* INTERACTIVE */
+  #interactive { text-align:center; padding-top:1rem; padding-bottom:5rem; }
+  .ily-prompt {
+    font-size:1.1rem; color:var(--muted);
+    margin-bottom:2.5rem; font-style:italic;
+  }
+  .ily-btn {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.25rem; font-weight:300;
+    color:var(--text); background:none;
+    border:1px solid rgba(34,211,238,0.35);
+    padding:1.2rem 3rem; cursor:none;
+    letter-spacing:0.06em;
+    position:relative; overflow:hidden;
+    transition: all 0.4s ease;
+  }
+  .ily-btn::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(10,74,110,0.4), rgba(34,211,238,0.08));
+    transform:scaleX(0); transform-origin:left;
+    transition:transform 0.4s ease;
+  }
+  .ily-btn:hover::before { transform:scaleX(1); }
+  .ily-btn:hover {
+    border-color:var(--cyan);
+    box-shadow:0 0 24px rgba(34,211,238,0.14);
+    color:var(--seafoam);
+  }
+  .ily-message {
+    margin-top:2.5rem; min-height:3rem;
+    font-size: clamp(1.2rem,3vw,1.9rem);
+    font-style:italic; color:var(--seafoam);
+    opacity:0; transition:opacity 0.5s ease;
+    text-shadow:0 0 30px rgba(103,232,249,0.4);
+  }
+  .ily-message.show { opacity:1; }
+
+  /* FINAL */
+  #final { text-align:center; padding-bottom:10rem; }
+  .final-heart {
+    font-size:2.5rem;
+    animation:heartbeat 1.8s ease-in-out infinite;
+    display:block; margin-bottom:2rem;
+    filter:drop-shadow(0 0 18px rgba(34,211,238,0.55));
+  }
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1);}
+    14%{transform:scale(1.18);} 28%{transform:scale(1);}
+    42%{transform:scale(1.1);} 70%{transform:scale(1);}
+  }
+  .final-text {
+    font-size:clamp(1.6rem,4vw,2.8rem);
+    font-weight:300; line-height:1.3;
+  }
+  .final-text em { font-style:italic; color:var(--seafoam); }
+  .final-sub {
+    margin-top:1.5rem;
+    font-family:'DM Mono',monospace;
+    font-size:0.72rem; letter-spacing:0.35em;
+    color:var(--muted); opacity:0.7;
+  }
+
+  /* falling drops */
+  .drop {
+    position:fixed; pointer-events:none;
+    animation:fallDrop linear forwards; z-index:999;
+  }
+  @keyframes fallDrop {
+    0%  {transform:translateY(-10px) rotate(0deg); opacity:1;}
+    100%{transform:translateY(100vh) rotate(200deg); opacity:0;}
+  }
+
+  /* EASTER EGGS */
+  .egg {
+    position: fixed;
+    font-size: 1.4rem;
+    cursor: none;
+    z-index: 10;
+    filter: drop-shadow(0 0 6px rgba(34,211,238,0.4));
+    animation: eggFloat var(--ef-dur) ease-in-out infinite alternate;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    user-select: none;
+  }
+  .egg:hover {
+    transform: scale(1.4);
+    filter: drop-shadow(0 0 14px rgba(103,232,249,0.9));
+  }
+  @keyframes eggFloat {
+    from { transform: translateY(0px); }
+    to   { transform: translateY(-8px); }
+  }
+
+  /* egg tooltip popup */
+  .egg-popup {
+    position: fixed;
+    z-index: 200;
+    background: rgba(4,28,44,0.92);
+    border: 1px solid rgba(34,211,238,0.3);
+    backdrop-filter: blur(14px);
+    padding: 1.2rem 1.6rem;
+    max-width: 260px;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text);
+    font-style: italic;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border-radius: 2px;
+  }
+  .egg-popup.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .egg-popup::before {
+    content: '';
+    position: absolute; bottom: -1px; left: -1px;
+    width: 12px; height: 12px;
+    border-left: 2px solid var(--cyan);
+    border-bottom: 2px solid var(--cyan);
+  }
+  .egg-found-counter {
+    position: fixed;
+    bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--teal);
+    z-index: 50;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* PROMISES SECTION */
+  #promises { background: linear-gradient(180deg, transparent, rgba(6,40,64,0.32), transparent); }
+  .promise-list {
+    list-style: none;
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .promise-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.4rem;
+    padding: 1.6rem;
+    border: 1px solid rgba(34,211,238,0.1);
+    background: rgba(10,74,110,0.06);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.4s ease, background 0.4s ease;
+  }
+  .promise-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .promise-item:hover {
+    border-color: rgba(34,211,238,0.25);
+    background: rgba(10,74,110,0.12);
+  }
+  .promise-item::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    height: 1px; width: 0;
+    background: linear-gradient(to right, var(--cyan), transparent);
+    transition: width 0.5s ease;
+  }
+  .promise-item:hover::after { width: 100%; }
+  .promise-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    filter: drop-shadow(0 0 6px rgba(34,211,238,0.35));
+  }
+  .promise-text {
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(224,247,250,0.88);
+  }
+
+  /* scroll reveal */
+  .reveal {
+    opacity:0; transform:translateY(28px);
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="ocean-bg"></canvas>
+<div id="bubbles"></div>
+
+<!-- EASTER EGGS -->
+<div class="egg" id="egg1" style="top:18vh;left:4vw;--ef-dur:3.1s" title="">🐚</div>
+<div class="egg" id="egg2" style="top:55vh;right:5vw;--ef-dur:4.2s" title="">🌿</div>
+<div class="egg" id="egg3" style="top:82vh;left:8vw;--ef-dur:3.7s" title="">⭐</div>
+<div class="egg" id="egg4" style="top:35vh;right:3vw;--ef-dur:5s"   title="">🪸</div>
+<div class="egg" id="egg5" style="top:68vh;left:2vw;--ef-dur:3.4s" title="">🐠</div>
+<div class="egg-popup" id="eggPopup"></div>
+<div class="egg-found-counter" id="eggCounter">find the hidden treasures 🐚</div>
+
+<div class="wave-container">
+  <div class="wave wave1"></div>
+  <div class="wave wave2"></div>
+  <div class="wave wave3"></div>
+</div>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="landing-glow"></div>
+  <div class="rays"></div>
+  <p class="month-badge">~ FIVE MONTHS TOGETHER ~</p>
+  <h1 class="main-title">Happy <em>Anniversary,</em><br>my love.</h1>
+  <p class="subtitle">Like the tide that always finds its shore, I always find my way back to you.</p>
+  <span class="scroll-hint">DRIFT DOWN ↓</span>
+</div>
+
+<!-- SORRY -->
+<section id="sorry">
+  <div class="section-label reveal">THINGS I OWE YOU</div>
+  <h2 class="love-title reveal">I'm <em>sorry.</em><br>And I mean it.</h2>
+  <p class="love-prose reveal">
+    Some apologies don't need a reason to be earned. They just need to be felt. Here are mine.
+    Not as excuses, but as promises dressed in honesty.
+  </p>
+  <div class="sorry-grid">
+    <div class="sorry-card reveal">
+      <p class="sorry-num">01</p>
+      <p>For every time I went quiet when you needed my words the most. Silence isn't peace when you're waiting on the other side of it. I know that now.</p>
+    </div>
+    <div class="sorry-card reveal">
+      <p class="sorry-num">02</p>
+      <p>For every message I took too long to reply to. You deserve someone who shows up fast, not someone who makes you wonder if they forgot about you.</p>
+    </div>
+    <div class="sorry-card reveal">
+      <p class="sorry-num">03</p>
+      <p>For the times I might have made you feel like a burden when all you were doing was trusting me with your heart. That trust is the most precious thing you've given me.</p>
+    </div>
+    <div class="sorry-card reveal">
+      <p class="sorry-num">04</p>
+      <p>For anything I said carelessly that landed heavier than I intended. You feel deeply, and I should always remember that before I speak.</p>
+    </div>
+    <div class="sorry-card reveal">
+      <p class="sorry-num">05</p>
+      <p>For not always knowing how to love you out loud. For keeping things in when you deserved to hear them. You are not someone who should ever have to guess how I feel.</p>
+    </div>
+    <div class="sorry-card reveal">
+      <p class="sorry-num">06</p>
+      <p>For everything I don't even remember but you quietly held onto. I'm sorry for those too. The ones you forgave before I even knew to ask.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LOVE -->
+<section id="love">
+  <div class="section-label reveal">WHAT YOU ARE TO ME</div>
+  <h2 class="love-title reveal">I love you in<br><em>a hundred quiet ways.</em></h2>
+  <p class="love-prose reveal">
+    This list could go on forever. But here's a piece of it. Every single one of them is true.
+  </p>
+  <ul class="ways-list">
+    <li><span class="ways-num">01</span><span>I love how you make me feel like talking to you is the easiest thing in the world. You never make me feel judged. That kind of safety is rare and I don't take it lightly.</span></li>
+    <li><span class="ways-num">02</span><span>I love the way you care. Not in a performative way, but quietly, genuinely. When you care about something or someone, you really mean it. That kind of heart is not common.</span></li>
+    <li><span class="ways-num">03</span><span>I love how real you are. You don't pretend to be something you're not, and in a world full of people performing a version of themselves, that realness is something I find myself drawn to constantly.</span></li>
+    <li><span class="ways-num">04</span><span>I love your mind. The way you think, the things you notice, the way you piece together your thoughts. There is something going on behind your eyes that I could spend a lifetime trying to understand and still want more.</span></li>
+    <li><span class="ways-num">05</span><span>I love how you feel things deeply. You don't brush things off. You sit with your feelings and that takes a kind of emotional courage most people don't have. I see that in you.</span></li>
+    <li><span class="ways-num">06</span><span>I love that you're still here. You chose this, chose me, across every inconvenient mile and every timezone. That choice is not small. I think about it more than you know.</span></li>
+    <li><span class="ways-num">07</span><span>I love how you express yourself. Even through text, even with no voice, you somehow still sound exactly like you. I've learned to hear you through your words alone, and I wouldn't trade that for anything.</span></li>
+    <li><span class="ways-num">08</span><span>I love your softness. Not weakness, softness. The kind that takes strength to keep. The kind that trusts even when it has every reason not to. That's you.</span></li>
+    <li><span class="ways-num">09</span><span>I love how you still surprise me. Five months in and you still catch me off guard. I hope that never stops. I hope I never reach a point where I think I've fully figured you out.</span></li>
+    <li><span class="ways-num">10</span><span>I love that you exist. Genuinely, simply, completely. You are someone the world is better for having in it. And I am someone whose life is better because you chose to be in mine.</span></li>
+  </ul>
+</section>
+
+<!-- LETTER -->
+<section id="letter">
+  <div class="section-label reveal">A LETTER FOR YOU</div>
+  <div class="letter-box reveal">
+    <p class="letter-dear">My love,</p>
+    <div class="letter-body">
+      <p>Five months doesn't sound like a lot when you say it out loud. But when I think about everything that five months actually means, every conversation, every late night text, every little thing you've shared with me, every moment I got to spend just knowing you, it feels enormous. It feels like something I'd protect with everything I have.</p>
+      <p>We don't do calls. We don't see each other's faces light up in real time. We exist entirely through words. And somehow, somehow, you've made that feel like enough. More than enough. You've made texting feel like its own kind of intimacy. Like I can still hear you, even through silence.</p>
+      <p>I'm in Ireland. You're in India. There's an entire ocean sitting between us and somehow it still doesn't feel like the biggest thing. It just feels like a detail, like something that exists outside of what we actually are to each other. You love the ocean. Maybe that's why it doesn't scare me. Because you're on the other side of it.</p>
+      <p>I'm sorry for the ways I've fallen short. I'm sorry for every time you deserved more and I gave you less. And I'm not saying that to be poetic. I mean it plainly and simply: I am sorry, and I want to do better, and I will keep trying to.</p>
+      <p>You make me want to be someone worth missing. Someone worth waiting for texts from. Someone who deserves the specific, quiet, beautiful way you love. I hope I'm getting there. I hope you'll tell me when I'm not.</p>
+      <p>Happy five months, my love. Here's to every month after this one. Messier, realer, and closer than the last.</p>
+    </div>
+    <p class="letter-sign">Yours, always. 🌊</p>
+  </div>
+</section>
+
+<!-- PROMISES -->
+<section id="promises">
+  <div class="section-label reveal">WHAT I PROMISE YOU</div>
+  <h2 class="love-title reveal">Not just words.<br><em>Real promises.</em></h2>
+  <p class="love-prose reveal">
+    I don't want to just apologize and move on. I want to actually be better. So here is what I am committing to, right now, on five months.
+  </p>
+  <ul class="promise-list">
+    <li class="promise-item">
+      <span class="promise-icon">🌊</span>
+      <span class="promise-text">I promise to never let you wonder how I feel about you. If I love you, you will know. If something is wrong, I will tell you instead of going quiet.</span>
+    </li>
+    <li class="promise-item">
+      <span class="promise-icon">🐚</span>
+      <span class="promise-text">I promise to show up. Even on the days it's hard, even across the distance, even when I don't have the right words. I will still try.</span>
+    </li>
+    <li class="promise-item">
+      <span class="promise-icon">💙</span>
+      <span class="promise-text">I promise to never make you feel like a burden for needing me. Your feelings are not inconvenient. You are not too much. You are exactly enough.</span>
+    </li>
+    <li class="promise-item">
+      <span class="promise-icon">🌿</span>
+      <span class="promise-text">I promise to be more patient. With the distance, with the timing, and with you on the days when things feel heavy for no reason at all.</span>
+    </li>
+    <li class="promise-item">
+      <span class="promise-icon">⭐</span>
+      <span class="promise-text">I promise to keep choosing you. Not just when it is easy, but when it is 2am and we're both tired and the distance feels longer than usual. Still you. Always you.</span>
+    </li>
+    <li class="promise-item">
+      <span class="promise-icon">🪸</span>
+      <span class="promise-text">I promise to remind you that you are loved more often than you probably expect. Because you deserve to hear it, not just assume it.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- INTERACTIVE -->
+<section id="interactive">
+  <p class="ily-prompt reveal">Need a reminder? Press it as many times as you want.</p>
+  <button class="ily-btn reveal" id="ilyBtn">Tell me you love me</button>
+  <p class="ily-message" id="ilyMsg"></p>
+</section>
+
+<!-- FINAL -->
+<section id="final">
+  <span class="final-heart reveal">🌊</span>
+  <h2 class="final-text reveal">Five months down.<br><em>Forever left to go.</em></h2>
+  <p class="final-sub reveal">~ HAPPY ANNIVERSARY ~</p>
+</section>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=(mx-4)+'px'; cur.style.top=(my-4)+'px';
+});
+(function animRing(){
+  rx+=(mx-rx-16)*0.1; ry+=(my-ry-16)*0.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+// OCEAN CANVAS
+const canvas=document.getElementById('ocean-bg');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+resize(); window.addEventListener('resize',resize);
+
+const particles=Array.from({length:130},()=>({
+  x:Math.random()*1.2-0.1, y:Math.random(),
+  r:Math.random()*2+0.5,
+  sp:Math.random()*0.00025+0.00008,
+  op:Math.random()*0.45+0.08,
+  pulse:Math.random()*Math.PI*2,
+  pulseSpeed:Math.random()*0.02+0.007,
+  drift:(Math.random()-0.5)*0.00015,
+}));
+
+function drawOcean(){
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,   '#020d14');
+  g.addColorStop(0.3, '#041c2c');
+  g.addColorStop(0.65,'#062840');
+  g.addColorStop(1,   '#041c2c');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  const rg=ctx.createRadialGradient(W*0.5,H*0.75,0,W*0.5,H*0.75,W*0.65);
+  rg.addColorStop(0,'rgba(10,74,110,0.16)'); rg.addColorStop(1,'transparent');
+  ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+}
+
+let t=0;
+(function loop(){
+  ctx.clearRect(0,0,W,H);
+  drawOcean();
+  t+=0.01;
+  particles.forEach(p=>{
+    p.pulse+=p.pulseSpeed;
+    p.x+=p.drift+Math.sin(t*0.25+p.pulse)*0.00012;
+    p.y-=p.sp;
+    if(p.y<-0.02) p.y=1.02;
+    if(p.x<-0.05) p.x=1.05;
+    if(p.x>1.05)  p.x=-0.05;
+    const alpha=p.op*(0.45+0.55*Math.sin(p.pulse));
+    const grd=ctx.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,p.r*3.5);
+    grd.addColorStop(0,`rgba(34,211,238,${alpha})`);
+    grd.addColorStop(1,'transparent');
+    ctx.beginPath();
+    ctx.arc(p.x*W,p.y*H,p.r*3.5,0,Math.PI*2);
+    ctx.fillStyle=grd; ctx.fill();
+  });
+  requestAnimationFrame(loop);
+})();
+
+// BUBBLES
+const bubblesEl=document.getElementById('bubbles');
+for(let i=0;i<28;i++){
+  const b=document.createElement('div');
+  b.className='bubble';
+  const size=Math.random()*18+5;
+  b.style.cssText=`
+    width:${size}px;height:${size}px;
+    left:${Math.random()*100}%;
+    --dur:${(Math.random()*12+8).toFixed(1)}s;
+    --delay:${(Math.random()*10).toFixed(1)}s;
+    --drift:${((Math.random()-0.5)*60).toFixed(1)}px;
+    --op:${(Math.random()*0.16+0.04).toFixed(2)};
+  `;
+  bubblesEl.appendChild(b);
+}
+
+// SCROLL REVEAL (includes promise items)
+const io=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),i*75);
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal,.ways-list li,.promise-item').forEach(el=>io.observe(el));
+
+// ILY BUTTON
+const messages=[
+  "I love you more than the ocean between us. 🌊",
+  "I love you in every language I don't know how to speak.",
+  "I love you across every timezone and then some.",
+  "I love you for the way you make me feel like myself.",
+  "I love you for choosing to stay, every single day.",
+  "I love you in all the ways texts can't fully carry. But I try anyway.",
+  "I love you for every version of you I've gotten to meet so far.",
+  "I love you the way the tide comes back. Always.",
+  "I love you for the softness you've trusted me with.",
+  "I love you today. Tomorrow. In five more months. Always.",
+  "I love you, and I mean it every single time.",
+  "I love you and no distance changes that. Not even close.",
+  "I love you for being real with me when you didn't have to be.",
+  "I love you like the deep end of the ocean. Completely, quietly, and without a bottom.",
+];
+let lastIdx=-1;
+const ilyBtn=document.getElementById('ilyBtn');
+const ilyMsg=document.getElementById('ilyMsg');
+
+function spawnDrops(){
+  const emojis=['🌊','💧','✨','🫧','🐚','⭐','🌙','💙'];
+  for(let i=0;i<14;i++){
+    const d=document.createElement('div');
+    d.className='drop';
+    d.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    d.style.left=Math.random()*100+'vw';
+    d.style.animationDuration=(Math.random()*2.5+1.8)+'s';
+    d.style.animationDelay=(Math.random()*0.7)+'s';
+    d.style.fontSize=(Math.random()*0.8+0.7)+'rem';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),4000);
+  }
+}
+
+// EASTER EGGS
+const eggMessages = {
+  egg1: "you found a shell. 🐚 just like you, it holds something beautiful inside that most people never get to hear.",
+  egg2: "you found sea grass. 🌿 soft, quiet, and alive in places people forget to look. a bit like you.",
+  egg3: "you found a star. ⭐ I think about you the way you think about stars. always there, even when you can't see them.",
+  egg4: "you found coral. 🪸 something that grows slowly, quietly, into something the whole ocean depends on. that's what you are to me.",
+  egg5: "you found a little fish. 🐠 it was hiding. it wanted to be found by you specifically.",
+};
+let eggsFound = 0;
+const popup = document.getElementById('eggPopup');
+const counter = document.getElementById('eggCounter');
+let popupTimer = null;
+
+document.querySelectorAll('.egg').forEach(egg => {
+  egg.addEventListener('click', e => {
+    const msg = eggMessages[egg.id];
+    if (!egg.dataset.found) {
+      egg.dataset.found = '1';
+      eggsFound++;
+      egg.style.filter = 'drop-shadow(0 0 18px rgba(103,232,249,1))';
+      counter.textContent = eggsFound < 5
+        ? `${eggsFound} of 5 treasures found 🐚`
+        : 'all 5 treasures found. just like you found me. 🌊';
+    }
+    popup.textContent = msg;
+    const pw = 270, ph = 100;
+    let px = e.clientX + 16;
+    let py = e.clientY - 20;
+    if (px + pw > window.innerWidth)  px = e.clientX - pw - 16;
+    if (py + ph > window.innerHeight) py = e.clientY - ph - 10;
+    popup.style.left = px + 'px';
+    popup.style.top  = py + 'px';
+    popup.classList.remove('show');
+    void popup.offsetWidth;
+    popup.classList.add('show');
+    if (popupTimer) clearTimeout(popupTimer);
+    popupTimer = setTimeout(() => popup.classList.remove('show'), 4000);
+  });
+});
+
+ilyBtn.addEventListener('click',()=>{
+  let idx;
+  do{ idx=Math.floor(Math.random()*messages.length); }while(idx===lastIdx);
+  lastIdx=idx;
+  ilyMsg.classList.remove('show');
+  setTimeout(()=>{ ilyMsg.textContent=messages[idx]; ilyMsg.classList.add('show'); },180);
+  spawnDrops();
+});
+</script>
+</body>
+</html>
